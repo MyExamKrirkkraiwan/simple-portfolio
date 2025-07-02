@@ -1,0 +1,21 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # กำหนดให้ Workflow ทำงานเมื่อมีการ push ไปที่ branch 'main' (หรือ 'master' หากคุณใช้ชื่อนั้น)
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # Runner ที่จะใช้ในการรัน Workflow
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4 # ดึงโค้ดจาก Repository ของคุณ
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3 # Action สำหรับ Deploy ไปยัง GitHub Pages
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }} # Token สำหรับการยืนยันสิทธิ์
+        publish_dir: ./ # ระบุโฟลเดอร์ที่ต้องการ Deploy (ในที่นี้คือ root ของโปรเจกต์)
+        # cname: your-custom-domain.com # ถ้าคุณมี Custom Domain สามารถระบุได้ที่นี่
