@@ -1,21 +1,43 @@
-name: Deploy to GitHub Pages
+name: Deploy Static Website to GitHub Pages
 
 on:
   push:
     branches:
-      - main # กำหนดให้ Workflow ทำงานเมื่อมีการ push ไปที่ branch 'main' (หรือ 'master' หากคุณใช้ชื่อนั้น)
+      - main # Workflow จะทำงานเมื่อมีการ push ไปที่ branch 'main'
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest # Runner ที่จะใช้ในการรัน Workflow
+    runs-on: ubuntu-latest # ใช้ Ubuntu Runner ล่าสุด
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4 # ดึงโค้ดจาก Repository ของคุณ
+    - name: Checkout repository # ดึงโค้ดจาก Repository
+      uses: actions/checkout@v4
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3 # Action สำหรับ Deploy ไปยัง GitHub Pages
+    - name: Test (basic) - Check for essential files # ขั้นตอนการทดสอบพื้นฐาน
+      run: |
+        echo "Checking for essential project files..."
+        # ตรวจสอบว่าไฟล์ index.html มีอยู่
+        if [ ! -f "index.html" ]; then
+          echo "Error: index.html not found!"
+          exit 1
+        fi
+        # ตรวจสอบว่าไฟล์ style.css มีอยู่
+        if [ ! -f "style.css" ]; then
+          echo "Error: style.css not found!"
+          exit 1
+        fi
+        # ตรวจสอบว่าไฟล์ main.js มีอยู่ (ถ้าต้องการ)
+        if [ ! -f "main.js" ]; then
+          echo "Warning: main.js not found, but proceeding."
+          # exit 1 # uncomment this line if main.js is mandatory
+        fi
+        echo "Essential files found. Basic test passed."
+
+    - name: Deploy to GitHub Pages # Deploy หน้าเว็บไปยัง GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3 # ใช้ Action ยอดนิยมสำหรับการ Deploy
+      if: github.ref == 'refs/heads/main' # ทำการ Deploy เฉพาะเมื่อ push ไปที่ branch 'main' เท่านั้น
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }} # Token สำหรับการยืนยันสิทธิ์
+        github_token: ${{ secrets.GITHUB_TOKEN }} # ใช้ GitHub Token สำหรับการยืนยันสิทธิ์
         publish_dir: ./ # ระบุโฟลเดอร์ที่ต้องการ Deploy (ในที่นี้คือ root ของโปรเจกต์)
-        # cname: your-custom-domain.com # ถ้าคุณมี Custom Domain สามารถระบุได้ที่นี่
+        # cname: your-custom-domain.com # ถ้ามี Custom Domain สามารถระบุได้ที่นี่
+        # force_orphan: true # สามารถใช้ตัวเลือกนี้ได้หากมีปัญหาเรื่องประวัติของ gh-pages branch
