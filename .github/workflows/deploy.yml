@@ -33,11 +33,9 @@ jobs:
         fi
         echo "Essential files found. Basic test passed."
 
-    - name: Deploy to GitHub Pages # Deploy หน้าเว็บไปยัง GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3 # ใช้ Action ยอดนิยมสำหรับการ Deploy
-      if: github.ref == 'refs/heads/main' # ทำการ Deploy เฉพาะเมื่อ push ไปที่ branch 'main' เท่านั้น
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }} # ใช้ GitHub Token สำหรับการยืนยันสิทธิ์
-        publish_dir: ./ # ระบุโฟลเดอร์ที่ต้องการ Deploy (ในที่นี้คือ root ของโปรเจกต์)
-        # cname: your-custom-domain.com # ถ้ามี Custom Domain สามารถระบุได้ที่นี่
-        # force_orphan: true # สามารถใช้ตัวเลือกนี้ได้หากมีปัญหาเรื่องประวัติของ gh-pages branch
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        force_orphan: true # เพิ่มบรรทัดนี้
